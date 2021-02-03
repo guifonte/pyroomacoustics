@@ -97,7 +97,7 @@ def bandpass_filterbank(bands, fs=1.0, order=8, output="sos"):
     return filters
 
 
-def octave_bands(fc=1000, third=False, start=0.0, n=8):
+def octave_bands(fc=1000, third=False, start=0.0, n=8, base=2.0):
     """
     Create a bank of octave bands
 
@@ -119,9 +119,9 @@ def octave_bands(fc=1000, third=False, start=0.0, n=8):
 
     # Octave Bands
     fcentre = fc * (
-        2.0 ** (np.arange(start * div, (start + n) * div - (div - 1)) / div)
+        base ** (np.arange(start * div, (start + n) * div - (div - 1)) / div)
     )
-    fd = 2 ** (0.5 / div)
+    fd = base ** (0.5 / div)
     bands = np.array([[f / fd, f * fd] for f in fcentre])
 
     return bands, fcentre
@@ -160,17 +160,17 @@ class OctaveBandsFactory(object):
         Use third octave bands if True (default: False)
     """
 
-    def __init__(self, base_frequency=125.0, fs=16000, n_fft=512):
+    def __init__(self, base_frequency=20.0, fs=16000, n_fft=512,new_base=2**(1/12)):
 
         self.base_freq = base_frequency
         self.fs = fs
         self.n_fft = n_fft
 
         # compute the number of bands
-        self.n_bands = math.floor(np.log2(fs / base_frequency))
+        self.n_bands = math.floor(np.log2(fs / base_frequency)/np.log2(new_base)) ## FIXX
 
         self.bands, self.centers = octave_bands(
-            fc=self.base_freq, n=self.n_bands, third=False
+            fc=self.base_freq, n=self.n_bands, third=False, base=new_base
         )
 
         self._make_filters()
