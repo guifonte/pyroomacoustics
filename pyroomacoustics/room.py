@@ -687,6 +687,7 @@ class Room(object):
         humidity=None,
         air_absorption=False,
         ray_tracing=False,
+        new_base=2**(1/12),
     ):
 
         self.walls = walls
@@ -707,6 +708,7 @@ class Room(object):
             humidity,
             air_absorption,
             ray_tracing,
+            new_base,
         )
 
         # initialize the C++ room engine
@@ -734,6 +736,7 @@ class Room(object):
         humidity,
         air_absorption,
         ray_tracing,
+        new_base
     ):
 
         self.fs = fs
@@ -747,7 +750,7 @@ class Room(object):
         self.max_order = max_order
         self.sigma2_awgn = sigma2_awgn
 
-        self.octave_bands = OctaveBandsFactory(fs=self.fs)
+        self.octave_bands = OctaveBandsFactory(fs=self.fs, new_base=new_base)
 
         # Keep track of the state of the simulator
         self.simulator_state = {
@@ -2366,6 +2369,7 @@ class ShoeBox(Room):
         humidity=None,
         air_absorption=False,
         ray_tracing=False,
+        new_base=2**(1/12),
     ):
 
         p = np.array(p, dtype=np.float32)
@@ -2388,6 +2392,7 @@ class ShoeBox(Room):
             humidity,
             air_absorption,
             ray_tracing,
+            new_base,
         )
 
         # Keep the correctly ordered naming of walls
